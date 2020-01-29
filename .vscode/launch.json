@@ -5,10 +5,10 @@
         "name": "(msvc) Launch",
         "type": "cppvsdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/build/win32/solid-fiesta.exe",
+        "program": "${workspaceFolder}\\build\\win32\\solid-fiesta.exe",
         "args": [],
         "stopAtEntry": true,
-        "cwd": "${workspaceFolder}/build/win32",
+        "cwd": "${workspaceFolder}\\build\\win32",
         "environment": [],
         "externalConsole": false
       }

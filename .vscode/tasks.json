@@ -8,11 +8,10 @@
             "args": [
                 "/EHsc",
                 "/Zi",
-                "/Fe:",
                 "/Fd:%BuildPath%\\vc140.pdb",
                 "/Fo:%BuildPath%\\%TargetName%.obj",
-                "main.cpp",
-                "/OUT:%BuildPath%\\%TargetName%"
+                "/Fe:%BuildPath%\\%TargetName%.exe",
+                "main.cpp"
             ],
             "group": {
                 "kind": "build",
@@ -26,7 +25,7 @@
     ],
     "options": {
         "env": {
-            "BuildPath": "\\build\\win32",
+            "BuildPath": ".\\build\\win32",
             "TargetName": "solid-fiesta"
         }
     }
