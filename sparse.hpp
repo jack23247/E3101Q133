@@ -1,6 +1,6 @@
 #define EX_INDEX_OUT_OF_RANGE 0x01
 
-typedef unsigned int uint;
+typedef unsigned int T_UInt;
 
 template <class T> class SparseMatrix {
 
@@ -9,23 +9,22 @@ template <class T> class SparseMatrix {
      */
 private:
     struct T_SM_Node {
-        uint x, y;
+        T_UInt x, y;
         T_SM_Node* next;
         T data;
-    }
-
-    uint maxX, maxY;
+    };
+    T_UInt maxX, maxY;
     T_SM_Node* head;
 
     /*
      * Costruttore
      */
 public:
-    SparseMatrix(uint maxX, uint maxY) {
+    SparseMatrix(T_UInt maxX, T_UInt maxY) {
         this.head = T_SM_Node;
     }
 
-    void add(T elem, uint i, uint j) {
+    void add(T elem, T_UInt i, T_UInt j) {
         T_SM_Node curPtr = head;
         // oob check
         if(i > maxX || j > maxY) {
@@ -47,8 +46,8 @@ private:
 
     }
 
-    T_SM_Node* getPrevElemPtr(uint i, uint j) {
-        uint rowIndex, colIndex = 0;
+    T_SM_Node* getPrevElemPtr(T_UInt i, T_UInt j) {
+        T_UInt rowIndex, colIndex = 0;
         T_SM_Node* curNodePtr = this.head;
         T_SM_Node* retNodePtr = nullptr;
         do {
