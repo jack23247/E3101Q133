@@ -1,17 +1,18 @@
-VPATH=./src:./include
-INCLUDES=-I./include
+#VPATH=./src:./include
+#INCLUDES=-I./include
 CC=g++
 TARGET=arun
 CPP_FLAGS= -Wall -O0 -g -std=c++0x
+BIN = build/linux
 
-build/linux/$(TARGET): main.o dip.o 
+$(TARGET): $(BIN)/main.o $(BIN)/sparse.o 
 	$(CC) $^ -o $@
-build/linux/main.o : main.cpp
-	$(CC) $(CPP_FLAGS) $(INCLUDES) $< -c
-build/linux/sparse.o : sparse.hpp
-	$(CC) $(CPP_FLAGS) $(INCLUDES) $< -c
+$(BIN)/main.o : main.cpp
+	$(CC) $(CPP_FLAGS) $< -c
+$(BIN)/sparse.o : sparse.hpp
+	$(CC) $(CPP_FLAGS) $< -c
 
 .PHONY: clean
 clean:
-	rm -rf *.o $(TARGET)
+	rm -rf $(BIN)/*.o $(TARGET)
 	
