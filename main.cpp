@@ -2,7 +2,7 @@
 
 int main() {
 
-    SparseMatrix<char> sparseMatrixA ('a', 'b');
+    //SparseMatrix<char> sparseMatrixA ('a', 'b');
 
 }
 
