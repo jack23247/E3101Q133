@@ -1,4 +1,4 @@
-#define EX_INDEX_OUT_OF_RANGE 0x01
+#define EXC_INDEX_BOUND 0x01
 
 typedef unsigned int uint;
 
