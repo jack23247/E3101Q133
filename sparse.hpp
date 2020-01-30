@@ -1,63 +1,94 @@
-#define EXC_INDEX_BOUND 0x01
+/**
+ * \file SparseMatrix.hpp
+ * Una classe template che implementa una matrice sparsa.
+ */
 
-typedef unsigned int T_UInt;
+#include <limits> // Definisce UINT_MAX
+#include <iostream>
 
+/** \def EXC_INDEX_BOUND
+ * Eccezione generata in lettura/scrittura fuori dai limiti.
+ */
+#define EXC_INDEX_BOUNDS 0x01
+
+/** \typedef uint_t
+ * Shortcut per unsigned int.
+ */
+typedef unsigned int uint_t;
+
+/** \class SparseMatrix
+ * Classe template che implementa una matrice sparsa.
+ */
 template <class T> class SparseMatrix {
 
-    /*
-     * Parametri
-     */
 private:
-    struct T_SM_Node {
-        T_UInt x, y;
-        T_SM_Node* next;
+
+    /** \class SMNode
+     * Nodo della lista tramite cui la matrice è implementata.
+     */
+    class SMNode {
+
+    public:
+        uint_t x, y;
+        SMNode* next;
         T data;
+
+        SMNode(T data, uint_t x, uint_t y) {
+            this->x = x;
+            this->y = y;
+            this->data = data;
+            this->next = nullptr;
+        }
+        inline bool hasNext() { return(this->next != nullptr); }
     };
-    T_UInt maxX, maxY;
-    T_SM_Node* head;
+
+    // Dimensioni della matrice
+    uint_t size; // Linear size x*y
+
+    // Testa della lista linkata sottostante
+    SMNode* head;
+
+public:
+
+    // Costruttore
+    SparseMatrix(uint_t maxX, uint_t maxY) {
+        this->head = nullptr;
+        this->size = maxX * maxY;
+    }
 
     /*
-     * Costruttore
-     */
-public:
-    SparseMatrix(T_UInt maxX, T_UInt maxY) {
-        this.head = T_SM_Node;
-    }
+    * Metodi
+    */
 
-    void add(T elem, T_UInt i, T_UInt j) {
-        T_SM_Node curPtr = head;
+    // add(elem, i, j)
+    // Aggiunge un elemento elem in posizione i,j
+    // Sovrascrive se già presente
+    void add(T elem, uint_t i, uint_t j) {
         // oob check
-        if(i > maxX || j > maxY) {
-            throw EX_INDEX_OUT_OF_RANGE
+        if(i * j > this->size) {
+            throw EXC_INDEX_BOUNDS;
         }
-        // row check
-        do {
-            if(head->next->x < i || head->next->y < j) {
-                if(head->x == i) {
-
-                }
-            }
-        } while(T.next != nullptr);
+        SMNode newNode(elem, i, j);
+        // emptycheck
+        if(this->head == nullptr) {
+            this->head = &newNode;
+        }
+        SMNode* curNodePtr = this->head;
+        // row select
+        while(curNodePtr->hasNext() && curNodePtr->next->x < i) {
+                curNodePtr = curNodePtr->next;
+        }
+        // col select
+        while(
+            curNodePtr->hasNext() &&
+            curNodePtr->next->x == i &&
+            curNodePtr->next->y < j
+            ) {
+                curNodePtr = curNodePtr->next;
+        }
+        // Debug outcome check
+        std::cout << "Aggiungo: <" << i << "," << j << "> in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
 
     }
-
-private:
-    T_SM_Node seek(unsigned in) {
-
-    }
-
-    T_SM_Node* getPrevElemPtr(T_UInt i, T_UInt j) {
-        T_UInt rowIndex, colIndex = 0;
-        T_SM_Node* curNodePtr = this.head;
-        T_SM_Node* retNodePtr = nullptr;
-        do {
-            if(curNodePtr->next == nullptr || curNodePtr->next->x < i) break;
-        } while(curNodePtr = curNodePtr->next);
-        do {
-            if(curNodePtr->next == nullptr) return rowIndex;
-            if(curNodePtr->next->x < i) return rowIndex;
-        } while(curNodePtr = curNodePtr->next);
-    }
-
 
 };

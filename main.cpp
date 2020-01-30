@@ -1,8 +1,10 @@
+#include <limits>
 #include "sparse.hpp"
 
 int main() {
 
-    //SparseMatrix<char> sparseMatrixA ('a', 'b');
+    SparseMatrix<char> sparseMatrixA (5, 5);
+    sparseMatrixA.add('a', 1, 1);
 
 }
 
