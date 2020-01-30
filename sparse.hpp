@@ -34,7 +34,9 @@ private:
 		SMNode* next;
 		uint_t x, y;
 
-		SMNode(T data, uint_t x, uint_t y) {
+		SMNode() : next(nullptr);
+
+		SMNode(const T &data, uint_t x, uint_t y) {
 			this->x = x;
 			this->y = y;
 			this->data = data;
@@ -46,20 +48,43 @@ private:
 		}
 
 		inline bool hasNext() { return(this->next != nullptr); }
-	};
+	}; //struct SMNode
 
-	// Dimensioni della matrice
-	uint_t maxX;
-	uint_t maxY; // Linear size x*y
+	/**
+		Funzione helper per la rimozione ricorsiva dei nodi della matrice
 
-	// Testa della lista linkata sottostante
-	SMNode* head;
+		@param n nodo da rimuovere, (default) partendo da head
+	*/
+		void clear_helper(SMNode *n) {
+			if(n!=nullptr) {
+				clear_helper(n->next);	
+				delete n;
+				_size--;
+				n = nullptr;	
+			}
+		}
+	
+	
+	
+	
+	// Dimensioni di una matrice lineare
+	uint_t maxX; ///< Dimensione x della matrice
+	uint_t maxY; ///< Dimnesione y della matrice
+	uint_t size; ///< Dimensione attuale della matrice sparsa (numero di elem)
+	SMNode* head; ///< Testa della lista linkata
+
+
+
 
 public:
-
-	// Costruttore
+	/** Costruttore per una matrice X*Y senza elementi
+	 * 
+	 * @param maxX X della matrice
+	 * @param maxY Y della matrice
+	*/
 	SparseMatrix(uint_t maxX, uint_t maxY) {
 		this->head = nullptr;
+		this->size = 0;
 		this->maxX = maxX;
 		this->maxY = maxY;
 	}
@@ -80,6 +105,7 @@ public:
 		// emptycheck
 		if(this->head == nullptr) {
 			this->head = &newNode;
+			this->size +=1;
 		}
 		SMNode* curNodePtr = this->head;
 		// row select
