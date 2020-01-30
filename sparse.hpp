@@ -40,6 +40,13 @@ private:
             this->next = nullptr;
         }
         inline bool hasNext() { return(this->next != nullptr); }
+        
+        /** TODO: implementare una struct della forma struct element{
+        *           posx;
+        *           posy;
+        *           value;
+        *       };
+        */
     };
 
     // Dimensioni della matrice
