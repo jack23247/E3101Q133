@@ -1,3 +1,4 @@
+#pragma once
 /**
  * \file SparseMatrix.hpp
  * Una classe template che implementa una matrice sparsa.
@@ -26,9 +27,7 @@ private:
     /** \class SMNode
      * Nodo della lista tramite cui la matrice è implementata.
      */
-    class SMNode {
-
-    public:
+    struct SMNode {
         uint_t x, y;
         SMNode* next;
         T data;
@@ -39,6 +38,11 @@ private:
             this->data = data;
             this->next = nullptr;
         }
+
+        ~SMNode(void) {
+            this->next = nullptr;
+        }
+
         inline bool hasNext() { return(this->next != nullptr); }
     };
 
