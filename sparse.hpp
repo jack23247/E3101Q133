@@ -43,7 +43,8 @@ private:
     };
 
     // Dimensioni della matrice
-    uint_t size; // Linear size x*y
+    uint_t maxX;
+    uint_t maxY; // Linear size x*y
 
     // Testa della lista linkata sottostante
     SMNode* head;
@@ -53,7 +54,8 @@ public:
     // Costruttore
     SparseMatrix(uint_t maxX, uint_t maxY) {
         this->head = nullptr;
-        this->size = maxX * maxY;
+        this->maxX = maxX;
+        this->maxY = maxY;
     }
 
     /*
@@ -65,8 +67,8 @@ public:
     // Sovrascrive se già presente
     void add(T elem, uint_t i, uint_t j) {
         // oob check
-        if(i * j > this->size) {
-            throw EXC_INDEX_BOUNDS;
+        if(i > this->maxX || j > this->maxY) {
+            throw EXC_INDEX_BOUNDS; // TODO gestione eccezioni
         }
         SMNode newNode(elem, i, j);
         // emptycheck
