@@ -24,7 +24,7 @@ template <class T> class SparseMatrix {
 
 private:
 
-    /** \class SMNode
+    /** \struct SMNode
      * Nodo della lista tramite cui la matrice è implementata.
      */
     struct SMNode {
@@ -44,18 +44,19 @@ private:
         }
 
         inline bool hasNext() { return(this->next != nullptr); }
-        
+
         /** TODO: implementare una struct della forma struct element{
         *           posx;
         *           posy;
         *           value;
         *       };
+        * @jack23247 IMHO annidiamo troppo
         */
     };
 
     // Dimensioni della matrice
     uint_t maxX;
-    uint_t maxY; // Linear size x*y
+    uint_t maxY;
 
     // Testa della lista linkata sottostante
     SMNode* head;
