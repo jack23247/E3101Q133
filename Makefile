@@ -5,12 +5,11 @@ TARGET=arun
 CPP_FLAGS= -Wall -O0 -g -std=c++0x
 BIN = build/linux
 
-$(TARGET): main.o sparse.o 
+$(TARGET): main.o
 	$(CC) $^ -o $@
-main.o : main.cpp
-	$(CC) $(CPP_FLAGS) $< -c
-sparse.o : sparse.cpp sparse.hpp
-	$(CC) $(CPP_FLAGS) $< -c
+main.o : main.cpp sparse.hpp
+	$(CC) $(CPP_FLAGS) -c main.cpp -o main.o
+
 
 .PHONY: clean
 clean:
