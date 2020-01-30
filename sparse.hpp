@@ -59,7 +59,7 @@ private:
 			if(n!=nullptr) {
 				clear_helper(n->next);	
 				delete n;
-				_size--;
+				size--;
 				n = nullptr;	
 			}
 		}
