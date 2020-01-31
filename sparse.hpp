@@ -35,6 +35,7 @@ template <class T> class SparseMatrix {
 
 private:
 
+<<<<<<< HEAD
     /** \struct SMNode
      * Nodo della lista tramite cui la matrice è implementata.
      */
@@ -63,21 +64,56 @@ private:
         *           value;
         *       };
         * @jack23247 IMHO annidiamo troppo
+=======
+	/** \struct SMNode
+	 * Nodo della lista tramite cui la matrice è implementata.
+	 */
+	struct SMNode {
+		uint_t x, y;
+		SMNode* next;
+		T data;
+
+		SMNode(T data, uint_t x, uint_t y) {
+			this->x = x;
+			this->y = y;
+			this->data = data;
+			this->next = nullptr;
+		}
+
+		~SMNode(void) {
+			this->next = nullptr;
+		}
+
+		inline bool hasNext() { return(this->next != nullptr); }
+
+		/** TODO: implementare una struct della forma struct element{
+		*           posx;
+		*           posy;
+		*           value;
+		*       };
+		* @jack23247 IMHO annidiamo troppo
+>>>>>>> 8218d65e162b5c261dee86cb9089008fe0e9ff78
 		* @sgro Allora dobbiamo generarla nel return? oppure creiamo una classe
 		* esterna?
-        */
-    };
+		*/
+	};
 
+<<<<<<< HEAD
     // Spazio utilizzato
     uint_t size; /** TODO: Refactoring, nome migliore? */
 
     // Dimensioni della matrice
     uint_t maxX;
     uint_t maxY;
+=======
+	// Dimensioni della matrice
+	uint_t maxX;
+	uint_t maxY;
+>>>>>>> 8218d65e162b5c261dee86cb9089008fe0e9ff78
 	uint_t size;
 	T def_elem;
-    // Testa della lista linkata sottostante
-    SMNode* head;
+	// Testa della lista linkata sottostante
+	SMNode* head;
 
 public:
 	/** Costruttore per una matrice X*Y senza elementi
