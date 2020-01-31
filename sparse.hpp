@@ -31,45 +31,45 @@ template <class T> class SparseMatrix {
 
 private:
 
-    /** \struct SMNode
-     * Nodo della lista tramite cui la matrice è implementata.
-     */
-    struct SMNode {
-        uint_t x, y;
-        SMNode* next;
-        T data;
+	/** \struct SMNode
+	 * Nodo della lista tramite cui la matrice è implementata.
+	 */
+	struct SMNode {
+		uint_t x, y;
+		SMNode* next;
+		T data;
 
-        SMNode(T data, uint_t x, uint_t y) {
-            this->x = x;
-            this->y = y;
-            this->data = data;
-            this->next = nullptr;
-        }
+		SMNode(T data, uint_t x, uint_t y) {
+			this->x = x;
+			this->y = y;
+			this->data = data;
+			this->next = nullptr;
+		}
 
-        ~SMNode(void) {
-            this->next = nullptr;
-        }
+		~SMNode(void) {
+			this->next = nullptr;
+		}
 
-        inline bool hasNext() { return(this->next != nullptr); }
+		inline bool hasNext() { return(this->next != nullptr); }
 
-        /** TODO: implementare una struct della forma struct element{
-        *           posx;
-        *           posy;
-        *           value;
-        *       };
-        * @jack23247 IMHO annidiamo troppo
+		/** TODO: implementare una struct della forma struct element{
+		*           posx;
+		*           posy;
+		*           value;
+		*       };
+		* @jack23247 IMHO annidiamo troppo
 		* @sgro Allora dobbiamo generarla nel return? oppure creiamo una classe
 		* esterna?
-        */
-    };
+		*/
+	};
 
-    // Dimensioni della matrice
-    uint_t maxX;
-    uint_t maxY;
+	// Dimensioni della matrice
+	uint_t maxX;
+	uint_t maxY;
 	uint_t size;
 	T def_elem;
-    // Testa della lista linkata sottostante
-    SMNode* head;
+	// Testa della lista linkata sottostante
+	SMNode* head;
 
 
 
