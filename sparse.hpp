@@ -1,10 +1,13 @@
+#ifndef SPARSE_HPP
+
 #ifdef _WIN32
-// #pragma once // Non posso usare sia pragma once che define SPARSE_HPP sadly
+#pragma once
 #define VC_EXTRALEAN
+#else __linux__
+#define SPARSE_HPP
 #endif
 
-#ifndef SPARSE_HPP
-#define SPARSE_HPP
+#define SF_DEBUG /**< Debug Enable **/
 
 #include <limits> // Definisce UINT_MAX
 #include <iostream>
@@ -119,9 +122,11 @@ public:
 			) {
 				curNodePtr = curNodePtr->next;
 		}
+		#ifdef SF_DEBUG
 		// Debug outcome check
-		std::cout << "Aggiungo: <" << i << "," << j << "> in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
-        /** TODO: inserimento */
+		std::cout << "[SF_DEBUG] Aggiungo: <" << i << "," << j << "> in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
+        #endif
+		/** TODO: inserimento */
 	}
 
 
