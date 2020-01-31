@@ -6,12 +6,7 @@
 #ifndef SPARSE_HPP
 #define SPARSE_HPP
 
-<<<<<<< HEAD
 #include <limits> // Definisce UINT_MAX
-=======
-
-#include <limits> ///< Definisce UINT_MAX
->>>>>>> 388031aa18faa0b34fe9a3e001d3caed27ae15fd
 #include <iostream>
 
 /** \def EXC_INDEX_BOUND
@@ -35,7 +30,6 @@ template <class T> class SparseMatrix {
 
 private:
 
-<<<<<<< HEAD
     /** \struct SMNode
      * Nodo della lista tramite cui la matrice è implementata.
      */
@@ -64,53 +58,18 @@ private:
         *           value;
         *       };
         * @jack23247 IMHO annidiamo troppo
-=======
-	/** \struct SMNode
-	 * Nodo della lista tramite cui la matrice è implementata.
-	 */
-	struct SMNode {
-		uint_t x, y;
-		SMNode* next;
-		T data;
-
-		SMNode(T data, uint_t x, uint_t y) {
-			this->x = x;
-			this->y = y;
-			this->data = data;
-			this->next = nullptr;
-		}
-
-		~SMNode(void) {
-			this->next = nullptr;
-		}
-
-		inline bool hasNext() { return(this->next != nullptr); }
-
-		/** TODO: implementare una struct della forma struct element{
-		*           posx;
-		*           posy;
-		*           value;
-		*       };
-		* @jack23247 IMHO annidiamo troppo
->>>>>>> 8218d65e162b5c261dee86cb9089008fe0e9ff78
 		* @sgro Allora dobbiamo generarla nel return? oppure creiamo una classe
 		* esterna?
 		*/
 	};
 
-<<<<<<< HEAD
     // Spazio utilizzato
     uint_t size; /** TODO: Refactoring, nome migliore? */
 
     // Dimensioni della matrice
     uint_t maxX;
     uint_t maxY;
-=======
-	// Dimensioni della matrice
-	uint_t maxX;
-	uint_t maxY;
->>>>>>> 8218d65e162b5c261dee86cb9089008fe0e9ff78
-	uint_t size;
+
 	T def_elem;
 	// Testa della lista linkata sottostante
 	SMNode* head;
@@ -161,12 +120,8 @@ public:
 				curNodePtr = curNodePtr->next;
 		}
 		// Debug outcome check
-<<<<<<< HEAD
 		std::cout << "Aggiungo: <" << i << "," << j << "> in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
         /** TODO: inserimento */
-=======
-		std::cout << "Aggiungo: <" << i << "," << j << "> : " << elem << " in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
->>>>>>> 388031aa18faa0b34fe9a3e001d3caed27ae15fd
 	}
 
 
