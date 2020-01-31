@@ -22,9 +22,9 @@ typedef unsigned int uint_t;
 
 /** \class SparseMatrix
  * Classe template che implementa una matrice sparsa.
- * 
+ *
  * @brief Matrice Sparsa
- * 
+ *
  * @param T tipo del dato
  */
 template <class T> class SparseMatrix {
@@ -47,6 +47,7 @@ private:
         }
 
         ~SMNode(void) {
+            /** TODO: T potrebbe essere una classe, chiamare il distruttore di T se esiste */
             this->next = nullptr;
         }
 
@@ -61,6 +62,9 @@ private:
         */
     };
 
+    // Spazio utilizzato
+    uint_t size; /** TODO: Refactoring, nome migliore? */
+
     // Dimensioni della matrice
     uint_t maxX;
     uint_t maxY;
@@ -68,12 +72,9 @@ private:
     // Testa della lista linkata sottostante
     SMNode* head;
 
-
-
-
 public:
 	/** Costruttore per una matrice X*Y senza elementi
-	 * 
+	 *
 	 * @param maxX X della matrice
 	 * @param maxY Y della matrice
 	*/
@@ -117,7 +118,7 @@ public:
 		}
 		// Debug outcome check
 		std::cout << "Aggiungo: <" << i << "," << j << "> in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
-
+        /** TODO: inserimento */
 	}
 
 };
