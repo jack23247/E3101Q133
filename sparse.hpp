@@ -6,7 +6,6 @@
 #ifndef SPARSE_HPP
 #define SPARSE_HPP
 
-
 #include <limits> // Definisce UINT_MAX
 #include <iostream>
 
@@ -95,7 +94,7 @@ public:
 	void add(T elem, uint_t i, uint_t j) {
 		// oob check
 		if(i > this->maxX || j > this->maxY) {
-			throw EXC_INDEX_BOUNDS; // TODO gestione eccezioni
+			throw EXC_INDEX_BOUNDS; /** TODO: gestione eccezioni */
 		}
 		SMNode newNode(elem, i, j);
 		// emptycheck
