@@ -6,17 +6,22 @@
 #ifndef SPARSE_HPP
 #define SPARSE_HPP
 
+<<<<<<< HEAD
 #include <limits> // Definisce UINT_MAX
+=======
+
+#include <limits> ///< Definisce UINT_MAX
+>>>>>>> 388031aa18faa0b34fe9a3e001d3caed27ae15fd
 #include <iostream>
 
 /** \def EXC_INDEX_BOUND
-* Eccezione generata in lettura/scrittura fuori dai limiti.
-*/
+ * Eccezione generata in lettura/scrittura fuori dai limiti.
+ */
 #define EXC_INDEX_BOUNDS 0x01
 
 /** \typedef uint_t
  * Shortcut per unsigned int.
-*/
+ */
 typedef unsigned int uint_t;
 
 /** \class SparseMatrix
@@ -58,6 +63,8 @@ private:
         *           value;
         *       };
         * @jack23247 IMHO annidiamo troppo
+		* @sgro Allora dobbiamo generarla nel return? oppure creiamo una classe
+		* esterna?
         */
     };
 
@@ -67,7 +74,8 @@ private:
     // Dimensioni della matrice
     uint_t maxX;
     uint_t maxY;
-
+	uint_t size;
+	T def_elem;
     // Testa della lista linkata sottostante
     SMNode* head;
 
@@ -77,11 +85,12 @@ public:
 	 * @param maxX X della matrice
 	 * @param maxY Y della matrice
 	*/
-	SparseMatrix(uint_t maxX, uint_t maxY) {
+	SparseMatrix(uint_t maxX, uint_t maxY, const T &def_elem) {
 		this->head = nullptr;
 		this->size = 0;
 		this->maxX = maxX;
 		this->maxY = maxY;
+		this->def_elem = def_elem;
 	}
 
 	/*
@@ -116,10 +125,23 @@ public:
 				curNodePtr = curNodePtr->next;
 		}
 		// Debug outcome check
+<<<<<<< HEAD
 		std::cout << "Aggiungo: <" << i << "," << j << "> in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
         /** TODO: inserimento */
+=======
+		std::cout << "Aggiungo: <" << i << "," << j << "> : " << elem << " in posizione <" << curNodePtr->x << "," << curNodePtr->y << ">" << std::endl;
+>>>>>>> 388031aa18faa0b34fe9a3e001d3caed27ae15fd
 	}
 
+
+	T getByPosition(uint_t i, uint_t j) {
+		// iteratore che scorre la sparse matrix fino all'indice ij, una volta trovato, returna una struct con l'elemento cercato e le coordinate.
+		// in caso l'iteratore arrivi a fine matrice, returna una struct senza indici (o indici -1 -1 ) con l'elemento di default
+		return this->def_elem;
+	}
+
+	void printSM(SparseMatrix<T> sm);
+	// printa su STD::COUT la matrice in ordine, scorrendo per righe.
 };
 
 #endif
