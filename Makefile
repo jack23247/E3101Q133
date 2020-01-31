@@ -14,4 +14,3 @@ main.o : main.cpp sparse.hpp
 .PHONY: clean
 clean:
 	rm -rf *.o $(TARGET)
-	
