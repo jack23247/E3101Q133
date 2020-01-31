@@ -7,7 +7,7 @@
 #define SPARSE_HPP
 
 
-#include <limits> // Definisce UINT_MAX
+#include <limits> ///< Definisce UINT_MAX
 #include <iostream>
 
 /** \def EXC_INDEX_BOUND
@@ -58,13 +58,15 @@ private:
         *           value;
         *       };
         * @jack23247 IMHO annidiamo troppo
+		* @sgro Allora dobbiamo generarla nel return? oppure creiamo una classe
+		* esterna?
         */
     };
 
     // Dimensioni della matrice
     uint_t maxX;
     uint_t maxY;
-
+	uint_t size;
     // Testa della lista linkata sottostante
     SMNode* head;
 
@@ -105,7 +107,7 @@ public:
 		SMNode* curNodePtr = this->head;
 		// row select
 		while(curNodePtr->hasNext() && curNodePtr->next->x < i) {
-				curNodePtr = curNodePtr->next;
+				curNodePtr = curNodePtr->next; 
 		}
 		// col select
 		while(
