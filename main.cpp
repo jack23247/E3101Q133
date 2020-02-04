@@ -9,5 +9,6 @@ int main() {
 	sparseMatrixA.add(2, 1, 3);
 	std::cout << sparseMatrixA.getByPosition(1, 3) << std::endl;
 	return 0;
+
 }
 

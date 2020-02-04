@@ -3,6 +3,12 @@
 #ifdef _WIN32
 #pragma once
 #define VC_EXTRALEAN
+// POSIX Compatibility
+#ifdef _M_IX86
+#define __WORDSIZE 32
+#else _M_AMD64
+#define __WORDSIZE 64
+#endif
 #else __linux__
 #define SPARSE_HPP
 #endif
