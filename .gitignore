@@ -1,4 +1,3 @@
-
 # Created by https://www.gitignore.io/api/visualstudio,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=visualstudio,visualstudiocode
 
@@ -18,3 +17,7 @@
 *.obj
 *.pdb
 *.ilk
+
+### Specifiche del progetto corrente ###
+.build/*
+*.o

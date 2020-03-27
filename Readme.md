@@ -25,7 +25,26 @@ classDiagram
 ```
 
 ```mermaid
-graph TD
-  a-->b
-  a-->c
+classDiagram
+  class exception
+
+  class MemoryManagementException {
+    -classGroup: 200
+  }
+  exception --> MemoryManagementException
+  class AccessViolationException {
+    -classModifier: 1
+    +what()
+  }
+  MemoryManagementException --> AccessViolationException
+
+  class BSTException {
+    -classGroup: 300
+  }
+  exception --> BSTException
+  class DuplicateDataException {
+    -classModifier: 1
+    +what()
+  }
+  BSTException --> DuplicateDataException
 ```

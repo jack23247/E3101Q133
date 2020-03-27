@@ -1,26 +1,40 @@
 #ifndef BST_HPP
 #define BST_HPP
 
-#define BST_ROOT_NODE nullptr
 #include <iostream>
-#include <csignal>
-
-class DuplicateDataException: public std::exception {
-    virtual const char* what() const throw() {
-        return "Inserimento duplicato";
-    }
-};
 
 class AccessViolationException: public std::exception {
     virtual const char* what() const throw() {
-        return "Violazione di accesso";
+        return "BST_301: E' stato effettuato un accesso illegale";
     }
 };
 
+class DuplicateDataException: public std::exception {
+    virtual const char* what() const throw() {
+        return "BST_201: E' stato inserito un dato duplicato.";
+    }
+};
+
+class VoidContentException: public std::exception {
+    virtual const char* what() const throw() {
+        return "BST_202: E' stato inserito un dato nullo.";
+    }
+};
+
+/**
+ * @brief Rappresenta un albero binario di ricerca
+ *
+ * @tparam T Tipo di dato contenuto dall'albero
+ *
+ */
 template <typename T> class BinarySearchTree {
 
 private:
 
+    /**
+     * @brief Rappresenta un nodo dell'albero binario
+     *
+     */
     struct Node {
 
         Node* parent;
@@ -28,6 +42,12 @@ private:
         Node* right;
         T data;
 
+        /**
+         * @brief Costruisce un nodo dato il contenuto e imposta il genitore al
+         * @brief puntatore nullo
+         *
+         * @param data Il contenuto del nodo
+         */
         Node(Node* parent, const T &data) {
             this->parent = parent;
             this->left = nullptr;
@@ -35,17 +55,28 @@ private:
             this->data = data;
         }
 
+        /**
+         * @brief Costruisce un nodo dato il contenuto e imposta il genitore al
+         * @brief puntatore nullo
+         *
+         * @param data Il contenuto del nodo
+         * 
+         */
         Node(const T &data) {
-            this->parent = BST_ROOT_NODE;
+            this->parent = nullptr; // Parent vuoto
             this->left = nullptr;
             this->right = nullptr;
             this->data = data;
         }
 
+        /**
+         * @brief Distrugge il nodo
+         *
+         */
         ~Node() {
-            this->parent = nullptr;
             this->left = nullptr;
             this->right = nullptr;
+            this->parent = nullptr;
         }
 
     }; // endstruct
@@ -84,6 +115,15 @@ private:
         printf("Rite:\t%i\n", curNode->right);
     }
 
+    void r_destroyNode(Node *curNode) {
+        if(curNode != nullptr) {
+            r_destroyNode(curNode->left);
+            r_destroyNode(curNode->right);
+            delete curNode;
+            curNode = nullptr;
+        }
+    }
+
 public:
 
     BinarySearchTree(T data) {
@@ -91,7 +131,8 @@ public:
     };
 
     ~BinarySearchTree() {
-        // TODO: implement
+        r_destroyNode(this->root);
+        this->root = nullptr;
     };
 
     void add(T data) {
