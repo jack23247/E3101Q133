@@ -1,14 +1,23 @@
-#include <limits>
-#include "sparse.hpp"
+#include "bst.hpp"
 
-int main() {
+int main(int argc, char** argv) {
 
-	SparseMatrix<int> sparseMatrixA (5, 5, 40);
-	sparseMatrixA.add(5, 1, 3);
-	sparseMatrixA.add(3, 1, 4);
-	sparseMatrixA.add(2, 1, 3);
-	std::cout << sparseMatrixA.getByPosition(1, 3) << std::endl;
-	return 0;
+    BinarySearchTree<int> myBst(6);
 
+    myBst.add(3);
+    myBst.add(2);
+    myBst.add(4);
+    myBst.add(5);
+    myBst.add(9);
+    myBst.add(7);
+    myBst.add(8);
+    myBst.add(10);
+    myBst.add(11);
+    myBst.add(12);
+
+    //myBst.print();
+
+    //delete &myBst;
+
+    return 0;
 }
-
