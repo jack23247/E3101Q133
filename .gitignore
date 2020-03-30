@@ -21,3 +21,4 @@
 ### Specifiche del progetto corrente ###
 .build/*
 *.o
+bst

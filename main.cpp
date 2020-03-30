@@ -15,8 +15,9 @@ int main(int argc, char** argv) {
     myBst.add(11);
     myBst.add(12);
 
-    //myBst.print();
-    delete &myBst;
+    myBst.print();
+
+    myBst.destroy();
 
     return 0;
 }

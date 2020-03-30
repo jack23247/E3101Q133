@@ -6,7 +6,7 @@
 .DEFAULT_GOAL := debug
 
 # Flag per il compilatore
-DBGFLAGS=-Og -ggdb
+DBGFLAGS=-Og -ggdb -DDEBUG
 RELFLAGS=-O3
 CXXFLAGS=-std=c++0x -Wall
 
