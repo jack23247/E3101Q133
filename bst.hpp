@@ -1,61 +1,13 @@
 #ifndef BST_HPP
 #define BST_HPP
 
-#include <iostream>
+#include <stdexcept>
+#include <ostream>
 
 #ifdef DEBUG
+#include <iostream>
 #include <cassert>
 #endif
-
-/**
- * @brief Accesso illegale impedito.
- *
- */
-class Trap_Mem01: public std::exception {
-    virtual const char* what() const throw() {
-        return "Trap_Mem01 !! Accesso illegale impedito.";
-    }
-};
-
-/**
- * @brief Eccezione generata durante la creazione di un nodo.
- *
- */
-class Trap_Mem02: public std::exception {
-    virtual const char* what() const throw() {
-        return "Trap_Mem02 !! Eccezione generata durante la creazione di un nodo.";
-    }
-};
-
-/**
- * @brief Inserimento di un dato duplicato impedito.
- *
- */
-class Trap_Log01: public std::exception {
-    virtual const char* what() const throw() {
-        return "Trap_Log01 !! Inserimento di un dato duplicato impedito.";
-    }
-};
-
-/**
- * @brief Inserimento di un dato nullo.
- *
- */
-class Trap_Log02: public std::exception {
-    virtual const char* what() const throw() {
-        return "Trap_Log02 !! Inserimento di un dato nullo impedito.";
-    }
-};
-
-/**
- * @brief Errore generale.
- *
- */
-class Trap_Gen99: public std::exception {
-    virtual const char* what() const throw() {
-        return "Trap_Gen99 !! Errore generale.";
-    }
-};
 
 /**
  * @brief Rappresenta un albero binario di ricerca
@@ -110,17 +62,15 @@ private:
     };
 
     Node* root;
-    //unsigned int size;
+    uint size;
 
     Node* createNode(T data) {
-        Node* ret;
         try {
-            ret = new Node(data);
+            return new Node(data);
         } catch(...) {
             r_destroyTree(this->root);
-            throw Trap_Mem02{};
+            throw std::runtime_error("createNode(): impossibile creare un nodo");
         }
-        return ret;
     }
 
     /**
@@ -132,25 +82,29 @@ private:
      *
      * @return Node* il puntatore in cui inserire il nodo
      *
-     * @throw Trap_Mem01{}
-     * @throw Trap_Log01{}
+     * @throw std::out_of_range{} nel caso di accesso ad una foglia vuota
+     * @throw std::invalid_argument{} nel caso di dato duplicato
      */
     Node* nextPlace(Node* curNode, T data, direction* lastBranch) {
         if(curNode == nullptr) {
             r_destroyTree(this->root);
-            throw Trap_Mem01{};
+            throw std::out_of_range("nextPlace(): accesso ad un nodo nullo: possibile albero non inizializzato");
         }
         if(curNode->data > data) {
             *lastBranch = direction::left;
+            #ifdef DEBUG
             std::cout << "nextPlace(): " << curNode->data << " is curNode->data. We are going LEFT!" << std::endl;
+            #endif
             return(curNode->left);
         } else if(curNode->data < data) {
             *lastBranch = direction::right;
+            #ifdef DEBUG
             std::cout << "nextPlace(): " << curNode->data << " is curNode->data. We are going RIGHT!" << std::endl;
+            #endif
             return(curNode->right);
         } else {
             r_destroyTree(this->root);
-            throw Trap_Log01{};
+            throw std::invalid_argument("nextPlace(): tentativo di inserimento di un dato duplicato");
         }
     }
 
@@ -170,16 +124,19 @@ private:
             r_destroyTree(curNode->right);
             delete curNode;
             curNode = nullptr;
-        } else {
+        }
+        #ifdef DEBUG
+        else {
             std::cout << "r_destroyTree(): node is NULL! Exiting." << std::endl;
         }
+        #endif
     }
 
     void r_printTree(Node* curNode, Node* parentNode = nullptr, direction lastBranch = direction::none) {
         if(curNode == nullptr) return;
         if(lastBranch != direction::none && parentNode == nullptr) {
             r_destroyTree(this->root);
-            throw Trap_Mem01{};
+            throw std::out_of_range("r_printTree(): accesso ad un nodo nullo con direzione nulla: possibile albero non inizializzato");
         }
         switch(lastBranch) {
             case direction::none:
@@ -192,17 +149,34 @@ private:
                 break;
             default:
                 r_destroyTree(this->root);
-                throw Trap_Gen99{};
+                throw std::logic_error("r_printTree(): valore logico non consentito");
                 break;
         }
         r_printTree(curNode->left, curNode, direction::left);
         r_printTree(curNode->right, curNode, direction::right);
     }
 
+    bool r_findNode(Node* curNode, T data) {
+        if(curNode != nullptr) {
+            if(curNode->data == data) {
+                return true;
+            } else if(curNode->data > data) {
+                return r_findNode(curNode->left, data);
+            } else if(curNode->data < data) {
+                return r_findNode(curNode->right, data);
+            } else {
+                r_destroyTree(this->root);
+                std::logic_error("r_findNode(): valore logico non consentito");
+            }
+        }
+        return false;
+    }
+
 public:
 
     BinarySearchTree(T data) {
         this->root = createNode(data);
+        this->size = 0;
     };
 
     ~BinarySearchTree() {
@@ -225,9 +199,18 @@ public:
                 break;
             default:
                 r_destroyTree(this->root);
-                throw Trap_Gen99{};
+                throw std::logic_error("add(): valore logico non consentito");
                 break;
         }
+        this->size++;
+    }
+
+    uint getSize() {
+        return this->size;
+    }
+
+    bool exists(T data) {
+        return r_findNode(this->root, data);
     }
 
     /**

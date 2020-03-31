@@ -1,6 +1,9 @@
 #include "bst.hpp"
+#include <cassert>
 
-int main(int argc, char** argv) {
+// #define TEST_FAIL
+
+int main() {
 
     BinarySearchTree<int> myBst(6);
 
@@ -12,10 +15,20 @@ int main(int argc, char** argv) {
     myBst.add(7);
     myBst.add(8);
     myBst.add(10);
+
+    #ifdef TEST_FAIL
+    myBst.add(10);
+    #endif
+
     myBst.add(11);
     myBst.add(12);
 
     myBst.print();
+
+    assert(myBst.exists(7));
+    assert(myBst.exists(12));
+    assert(!myBst.exists(128));
+    assert(myBst.getSize() == 10);
 
     myBst.destroy();
 

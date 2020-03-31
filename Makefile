@@ -8,7 +8,7 @@
 # Flag per il compilatore
 DBGFLAGS=-Og -ggdb -DDEBUG
 RELFLAGS=-O3
-CXXFLAGS=-std=c++0x -Wall
+CXXFLAGS=-std=c++0x -Wall -Wextra -pedantic
 
 # Sottodirettrici per i file oggetto ed eseguibile
 DBG=.build/debug
