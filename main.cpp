@@ -1,11 +1,14 @@
 #include "bst.hpp"
 #include <cassert>
+#include <ostream>
 
 // #define TEST_FAIL
 
 int main() {
 
     BinarySearchTree<int> myBst(6);
+
+    throw std::exception();
 
     myBst.add(3);
     myBst.add(2);
@@ -23,7 +26,7 @@ int main() {
     myBst.add(11);
     myBst.add(12);
 
-    myBst.print();
+    myBst.oldPrint();
 
     assert(myBst.exists(7));
     assert(myBst.exists(12));
@@ -31,6 +34,8 @@ int main() {
     assert(myBst.getSize() == 10);
 
     myBst.destroy();
+
+    std::cout << myBst << std::endl;
 
     return 0;
 }

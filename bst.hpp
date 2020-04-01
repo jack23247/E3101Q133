@@ -15,7 +15,7 @@
  * @tparam T Tipo di dato contenuto dall'albero
  *
  */
-template <typename T> class BinarySearchTree {
+template <typename T> class BST {
 
 private:
 
@@ -27,6 +27,7 @@ private:
 
         Node* left;
         Node* right;
+        Node* parent;
         T data;
 
         /**
@@ -34,9 +35,10 @@ private:
          *
          * @param data Il contenuto del nodo
          */
-        Node(const T &data) {
+        Node(const T &data, Node* parent) {
             this->left = nullptr;
             this->right = nullptr;
+            this->parent = parent;
             this->data = data;
         }
 
@@ -47,6 +49,12 @@ private:
         ~Node() {
             this->left = nullptr;
             this->right = nullptr;
+            this->parent = nullptr;
+        }
+
+        friend std::ostream &operator<<(std::ostream &output, const Node& node) {
+            output << node.data;
+            return output;
         }
 
     }; // endstruct Node
@@ -64,9 +72,9 @@ private:
     Node* root;
     uint size;
 
-    Node* createNode(T data) {
+    Node* createNode(T data, Node* parent = nullptr) {
         try {
-            return new Node(data);
+            return new Node(data, parent);
         } catch(...) {
             r_destroyTree(this->root);
             throw std::runtime_error("createNode(): impossibile creare un nodo");
@@ -85,7 +93,7 @@ private:
      * @throw std::out_of_range{} nel caso di accesso ad una foglia vuota
      * @throw std::invalid_argument{} nel caso di dato duplicato
      */
-    Node* nextPlace(Node* curNode, T data, direction* lastBranch) {
+    Node* nextPlace(Node* curNode, T data, direction* lastBranch) const {
         if(curNode == nullptr) {
             r_destroyTree(this->root);
             throw std::out_of_range("nextPlace(): accesso ad un nodo nullo: possibile albero non inizializzato");
@@ -132,12 +140,19 @@ private:
         #endif
     }
 
-    void r_printTree(Node* curNode, Node* parentNode = nullptr, direction lastBranch = direction::none) {
+    void r_printTree(Node* curNode, Node* parentNode = nullptr, direction lastBranch = direction::none) const {
         if(curNode == nullptr) return;
+        /*
         if(lastBranch != direction::none && parentNode == nullptr) {
             r_destroyTree(this->root);
             throw std::out_of_range("r_printTree(): accesso ad un nodo nullo con direzione nulla: possibile albero non inizializzato");
+        }*/
+        if(lastBranch == direction::left) {
+            std::cout << parentNode->data << " -- l --> " << curNode->data << ";" << std::endl;
+        } else if(lastBranch == direction::right) {
+            std::cout << parentNode->data << " -- r --> " << curNode->data << ";" << std::endl;
         }
+        /*
         switch(lastBranch) {
             case direction::none:
                 break;
@@ -150,13 +165,13 @@ private:
             default:
                 r_destroyTree(this->root);
                 throw std::logic_error("r_printTree(): valore logico non consentito");
-                break;
+                break;*/
         }
         r_printTree(curNode->left, curNode, direction::left);
         r_printTree(curNode->right, curNode, direction::right);
     }
 
-    bool r_findNode(Node* curNode, T data) {
+    bool r_findNode(Node* curNode, T data) const {
         if(curNode != nullptr) {
             if(curNode->data == data) {
                 return true;
@@ -174,12 +189,12 @@ private:
 
 public:
 
-    BinarySearchTree(T data) {
+    BST(T data) {
         this->root = createNode(data);
         this->size = 0;
     };
 
-    ~BinarySearchTree() {
+    ~BST() {
         this->destroy();
     };
 
@@ -192,10 +207,10 @@ public:
         }
         switch(lastBranch) {
             case direction::left:
-                curNode->left = createNode(data);
+                curNode->left = createNode(data, curNode);
                 break;
             case direction::right:
-                curNode->right = createNode(data);
+                curNode->right = createNode(data, curNode);
                 break;
             default:
                 r_destroyTree(this->root);
@@ -205,11 +220,11 @@ public:
         this->size++;
     }
 
-    uint getSize() {
+    uint getSize() const {
         return this->size;
     }
 
-    bool exists(T data) {
+    bool exists(T data) const {
         return r_findNode(this->root, data);
     }
 
@@ -218,9 +233,19 @@ public:
      * @brief https://mermaid-js.github.io/mermaid/#/?id=flowchart
      *
      */
-    void print() {
+    void oldPrint() const {
         std::cout << "graph TD;" << std::endl;
         r_printTree(this->root);
+    }
+
+    void streamOpHelper(std::ostream &output) {
+
+    }
+
+    friend std::ostream &operator<<(std::ostream &output, const BST& bst) {
+         output << "graph TD;";
+         bst.streamOpHelper(output);
+         return output;
     }
 
     void destroy() {
@@ -233,6 +258,6 @@ public:
         }
     }
 
-}; // endclass
+}; // endclass BST
 
 #endif
