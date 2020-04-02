@@ -6,9 +6,7 @@
 
 int main() {
 
-    BinarySearchTree<int> myBst(6);
-
-    throw std::exception();
+    BST<int> myBst(6);
 
     myBst.add(3);
     myBst.add(2);
@@ -26,16 +24,16 @@ int main() {
     myBst.add(11);
     myBst.add(12);
 
-    myBst.oldPrint();
+    myBst.print();
 
     assert(myBst.exists(7));
     assert(myBst.exists(12));
     assert(!myBst.exists(128));
     assert(myBst.getSize() == 10);
+    
+    std::cout << myBst << std::endl;
 
     myBst.destroy();
-
-    std::cout << myBst << std::endl;
 
     return 0;
 }

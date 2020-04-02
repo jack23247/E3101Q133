@@ -1,27 +1,20 @@
 #ifndef BST_HPP
 #define BST_HPP
 
-#include <stdexcept>
-#include <ostream>
-
-#ifdef DEBUG
 #include <iostream>
-#include <cassert>
-#endif
+#include "bstexcept.hpp"
 
 /**
  * @brief Rappresenta un albero binario di ricerca
  *
  * @tparam T Tipo di dato contenuto dall'albero
- *
  */
 template <typename T> class BST {
 
 private:
 
     /**
-     * @brief Rappresenta un nodo dell'albero binario
-     *
+     * @brief Rappresenta un nodo del BST
      */
     struct Node {
 
@@ -44,7 +37,6 @@ private:
 
         /**
          * @brief Distrugge il nodo
-         *
          */
         ~Node() {
             this->left = nullptr;
@@ -52,6 +44,12 @@ private:
             this->parent = nullptr;
         }
 
+        /**
+         * @brief Overload dell'operatore << per la stampa di un nodo
+         * 
+         * @param output Lo stream di output
+         * @param node Il nodo da stampare
+         */
         friend std::ostream &operator<<(std::ostream &output, const Node& node) {
             output << node.data;
             return output;
@@ -61,10 +59,8 @@ private:
 
     /**
      * @brief direzione del ramo
-     *
      */
     enum direction {
-        none = -1,
         left,
         right
     };
@@ -72,105 +68,86 @@ private:
     Node* root;
     uint size;
 
+    /**
+     * @brief Crea un nuovo nodo
+     * 
+     * @param data Il dato contenuto nel nodo
+     * @param parent Il genitore del nodo
+     * @return Node* Un puntatore al nodo creato
+     * 
+     * @throw node_creation_error{} Nel caso non sia possibile creare il nodo
+     */
     Node* createNode(T data, Node* parent = nullptr) {
         try {
             return new Node(data, parent);
         } catch(...) {
             r_destroyTree(this->root);
-            throw std::runtime_error("createNode(): impossibile creare un nodo");
+            throw node_creation_error{};
         }
     }
 
     /**
-     * @brief trova il prossimo puntatore dato un nodo
+     * @brief Trova la direzione corretta dato un nodo e un dato da inserire
      *
-     * @param curNode il nodo di partenza
-     * @param data il dato da inserire
-     * @param lastBranch annotazione riguardo all'ultima direzione presa
+     * @param curNode Il nodo di partenza
+     * @param data Il dato da inserire
+     * @param lastBranch Annotazione riguardo all'ultima direzione presa
      *
      * @return Node* il puntatore in cui inserire il nodo
      *
-     * @throw std::out_of_range{} nel caso di accesso ad una foglia vuota
-     * @throw std::invalid_argument{} nel caso di dato duplicato
+     * @throw duplicate_data{} nel caso di dato duplicato
      */
-    Node* nextPlace(Node* curNode, T data, direction* lastBranch) const {
-        if(curNode == nullptr) {
-            r_destroyTree(this->root);
-            throw std::out_of_range("nextPlace(): accesso ad un nodo nullo: possibile albero non inizializzato");
-        }
+    Node* nextBranch(Node* curNode, T data, direction* curBranch) {
         if(curNode->data > data) {
-            *lastBranch = direction::left;
-            #ifdef DEBUG
-            std::cout << "nextPlace(): " << curNode->data << " is curNode->data. We are going LEFT!" << std::endl;
-            #endif
+            *curBranch = direction::left;
             return(curNode->left);
         } else if(curNode->data < data) {
-            *lastBranch = direction::right;
-            #ifdef DEBUG
-            std::cout << "nextPlace(): " << curNode->data << " is curNode->data. We are going RIGHT!" << std::endl;
-            #endif
+            *curBranch = direction::right;
             return(curNode->right);
         } else {
             r_destroyTree(this->root);
-            throw std::invalid_argument("nextPlace(): tentativo di inserimento di un dato duplicato");
+            throw duplicate_data{};
         }
     }
 
-    /* WALK-TREE DF proto
-    void r_walkTree(Node *curNode) {
-        if(curNode != nullptr) {
-            r_walkTree(curNode->left);
-            r_walkTree(curNode->right);
-        }
-    }
-    */
-
-    void r_destroyTree(Node* curNode) {
-        if(curNode != nullptr) {
-            std::cout << "r_destroyTree(): destroying node " << curNode->data << "." << std::endl;
-            r_destroyTree(curNode->left);
-            r_destroyTree(curNode->right);
-            delete curNode;
-            curNode = nullptr;
-        }
-        #ifdef DEBUG
-        else {
-            std::cout << "r_destroyTree(): node is NULL! Exiting." << std::endl;
-        }
-        #endif
+    /**
+     * @brief Stampa il BST su uno stream a partire dalla radice
+     * 
+     * @param output Lo stream su cui stampare
+     */
+    void printTree(std::ostream &output) const {
+        if(this->root == nullptr) return; // sanity check
+        r_printTree(output, this->root->left, this->root, direction::left);
+        r_printTree(output, this->root->right, this->root, direction::right);
     }
 
-    void r_printTree(Node* curNode, Node* parentNode = nullptr, direction lastBranch = direction::none) const {
+    /**
+     * @brief Scorre ricorsivamente il BST per stampare tutti i nodi
+     * 
+     * @param output Lo stream su cui stampare
+     * @param curNode Il nodo corrente
+     * @param parentNode Il nodo genitore
+     * @param lastBranch L'ultimo ramo preso
+     */
+    void r_printTree(std::ostream &output, Node* curNode, Node* parentNode, direction lastBranch) const {
         if(curNode == nullptr) return;
-        /*
-        if(lastBranch != direction::none && parentNode == nullptr) {
-            r_destroyTree(this->root);
-            throw std::out_of_range("r_printTree(): accesso ad un nodo nullo con direzione nulla: possibile albero non inizializzato");
-        }*/
         if(lastBranch == direction::left) {
-            std::cout << parentNode->data << " -- l --> " << curNode->data << ";" << std::endl;
+            output << *parentNode << " -- l --> " << *curNode << "; ";
         } else if(lastBranch == direction::right) {
-            std::cout << parentNode->data << " -- r --> " << curNode->data << ";" << std::endl;
+            output << *parentNode << " -- r --> " << *curNode << "; ";
         }
-        /*
-        switch(lastBranch) {
-            case direction::none:
-                break;
-            case direction::left:
-                std::cout << parentNode->data << " -- l --> " << curNode->data << ";" << std::endl;
-                break;
-            case direction::right:
-                std::cout << parentNode->data << " -- r --> " << curNode->data << ";" << std::endl;
-                break;
-            default:
-                r_destroyTree(this->root);
-                throw std::logic_error("r_printTree(): valore logico non consentito");
-                break;*/
-        }
-        r_printTree(curNode->left, curNode, direction::left);
-        r_printTree(curNode->right, curNode, direction::right);
+        r_printTree(output, curNode->left, curNode, direction::left);
+        r_printTree(output, curNode->right, curNode, direction::right);
     }
 
+    /**
+     * @brief Scorre ricorsivamente il BST per cercare un nodo
+     * 
+     * @param curNode Il nodo corrente
+     * @param data Il dato da cercare
+     * @return true Se il nodo esiste
+     * @return false Se il nodo non esiste
+     */
     bool r_findNode(Node* curNode, T data) const {
         if(curNode != nullptr) {
             if(curNode->data == data) {
@@ -179,30 +156,55 @@ private:
                 return r_findNode(curNode->left, data);
             } else if(curNode->data < data) {
                 return r_findNode(curNode->right, data);
-            } else {
-                r_destroyTree(this->root);
-                std::logic_error("r_findNode(): valore logico non consentito");
             }
         }
         return false;
     }
 
+
+    /**
+     * @brief Scorre ricorsivamente il BST per distruggerne i nodi
+     * 
+     * @param curNode Il nodo corrente
+     */
+    void r_destroyTree(Node* curNode) {
+        if(curNode != nullptr) {
+            r_destroyTree(curNode->left);
+            r_destroyTree(curNode->right);
+            delete curNode;
+            curNode = nullptr;
+        }
+    }
+
 public:
 
-    BST(T data) {
+    /**
+     * @brief Costruttore per il BST
+     * 
+     * @param data Il dato da inserire nel nodo radice
+     */
+    explicit BST(T data) {
         this->root = createNode(data);
         this->size = 0;
     };
 
+    /**
+     * @brief Distruttore per il BST
+     */
     ~BST() {
         this->destroy();
     };
 
+    /**
+     * @brief Aggiunge un nodo al BST
+     * 
+     * @param data Il dato da inserire nel nuovo nodo
+     */
     void add(T data) {
         Node* curNode = this->root;
         Node* tmpNodePtr;
         direction lastBranch;
-        while((tmpNodePtr = nextPlace(curNode, data, &lastBranch)) != nullptr) {
+        while((tmpNodePtr = nextBranch(curNode, data, &lastBranch)) != nullptr) {
             curNode = tmpNodePtr;
         }
         switch(lastBranch) {
@@ -220,40 +222,49 @@ public:
         this->size++;
     }
 
+    /**
+     * @brief Restituisce la dimensione del BST
+     */
     uint getSize() const {
         return this->size;
     }
 
+    /**
+     * @brief Trova un nodo nel BST
+     * 
+     * @param data Il dato da cercare
+     * @return true Se il nodo esiste
+     * @return false Se il nodo non esiste
+     */
     bool exists(T data) const {
         return r_findNode(this->root, data);
     }
 
     /**
-     * @brief stampa l'albero (sintassi compatibile con Mermaid)
-     * @brief https://mermaid-js.github.io/mermaid/#/?id=flowchart
-     *
+     * @brief Stampa l'albero (sintassi compatibile con Mermaidhttps://mermaid-js.github.io/mermaid/#/?id=flowchart
      */
-    void oldPrint() const {
-        std::cout << "graph TD;" << std::endl;
-        r_printTree(this->root);
+    void print() const {
+        std::cout << *this << std::endl;   
     }
 
-    void streamOpHelper(std::ostream &output) {
-
+    /**
+     * @brief Overload dell'operatore << per la stampa su uno stream
+     * 
+     * @param output Lo stream di output
+     * @param bst L'albero da stampare
+     */
+    friend std::ostream& operator<<(std::ostream& output, const BST& bst) {
+        output << "graph TD; ";
+        bst.printTree(output);
+        return output;
     }
 
-    friend std::ostream &operator<<(std::ostream &output, const BST& bst) {
-         output << "graph TD;";
-         bst.streamOpHelper(output);
-         return output;
-    }
-
+    /**
+     * @brief Distrugge il BST a partire dalla radice
+     */
     void destroy() {
         if(this->root != nullptr) {
             r_destroyTree(this->root);
-            #ifdef DEBUG
-            std::cout << "~BST(): destroying node ROOT." << std::endl;
-            #endif
             this->root = nullptr; // se non lo metto, succedono casini
         }
     }
