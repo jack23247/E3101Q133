@@ -1,9 +1,15 @@
+// btree.hpp
+// Classe templata per il progetto "btree"
+// Esame di Programmazione C++ 20/04/20
+// (c) 2020 - Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
+// Rilasciato sotto licenza MIT - Released under the MIT license
+
 #ifndef BST_HPP
 #define BST_HPP
 
 #include <iostream>
 
-#include "bstexcept.hpp"
+#include "btexcept.hpp"
 
 /**
  * @brief Rappresenta un albero binario di ricerca
@@ -28,7 +34,7 @@ class btree {
      * @param data Il contenuto del nodo
      * @param parent Il genitore del nodo
      */
-    explicit node(const T& data, node* parent)
+    node(const T& data, node* parent)
         : _left(nullptr), _right(nullptr), _parent(parent), _data(data) {}
 
     /**
@@ -60,8 +66,8 @@ class btree {
 
   node* _root;
   uint _size;
-  C _compare_node;
-  E _equals_node;
+  C _compare_strategy;
+  E _equals_strategy;
 
   /**
    * @brief Crea un nuovo nodo
@@ -93,11 +99,11 @@ class btree {
    * @throw duplicate_data{} nel caso di dato duplicato
    */
   node* next_branch(const node* cur_node, const T data, direction* cur_branch) {
-    if (this->_equals_node(cur_node->_data, data)) {
+    if (this->_equals_strategy(cur_node->_data, data)) {
       r_destroy(this->_root);
       throw duplicate_data{};
     }
-    if (this->_compare_node(cur_node->_data, data)) {
+    if (this->_compare_strategy(cur_node->_data, data)) {
       *cur_branch = direction::right;
       return (cur_node->_right);
     } else {
@@ -125,8 +131,8 @@ class btree {
    * @param parentNode Il nodo genitore
    * @param lastBranch L'ultimo ramo preso
    */
-  void r_stream_print(std::ostream& output, const node* cur_node, const node* parentNode,
-                      direction lastBranch) const {
+  void r_stream_print(std::ostream& output, const node* cur_node,
+                      const node* parentNode, direction lastBranch) const {
     if (cur_node == nullptr) return;
     if (lastBranch == direction::left) {
       output << *parentNode << " -- l --> " << *cur_node << "; ";
@@ -182,22 +188,47 @@ class btree {
     }
   }
 
+  /**
+   * @brief Copia una porzione dell'albero, usato solo da subtree
+   *
+   * @param dest_tree L'albero di destinazione
+   * @param cur_node Il nodo corrente
+   */
   void sub_copy(btree& dest_tree, const node* cur_node) const {
-    if (cur_node == nullptr) { return; } // salto il primo nodo
+    if (cur_node == nullptr) {
+      return;
+    }  // salto il primo nodo
     r_copy(dest_tree, cur_node->_left);
     r_copy(dest_tree, cur_node->_right);
   }
 
+  /**
+   * @brief Copia ricorsivamente una porzione dell'albero
+   *
+   * @param dest_tree L'albero di destinazione
+   * @param cur_node Il nodo corrente
+   */
   void r_copy(btree& dest_tree, const node* cur_node) const {
-    if (cur_node == nullptr) { return; }
+    if (cur_node == nullptr) {
+      return;
+    }
     dest_tree.add(cur_node->_data);
     r_copy(dest_tree, cur_node->_left);
     r_copy(dest_tree, cur_node->_right);
   }
 
+  /**
+   * @brief Copia ricorsivamente i dati da un altro albero
+   *
+   * @param src_tree L'albero sorgente
+   * @param cur_src_node Il nodo corrente nell'albero sorgente
+   */
   void r_copy_from(const btree& src_tree, const node* cur_src_node) {
-    if (cur_src_node == nullptr) { return; }
-    if(cur_src_node->_parent != nullptr) { // aggiungo il nodo solo se non è root
+    if (cur_src_node == nullptr) {
+      return;
+    }
+    if (cur_src_node->_parent !=
+        nullptr) {  // aggiungo il nodo solo se non è root
       this->add(cur_src_node->_data);
     }
     r_copy_from(src_tree, cur_src_node->_left);
@@ -206,7 +237,7 @@ class btree {
 
  public:
   /**
-   * @brief Costruttore per il btree
+   * @brief Costruttore a partire da un dato per il btree
    *
    * @param data Il dato da inserire nel nodo radice
    */
@@ -215,6 +246,11 @@ class btree {
     this->_size = 0;
   };
 
+  /**
+   * @brief Costruttore di copia per il btree
+   *
+   * @param src L'albero sorgente
+   */
   btree(const btree& src) {
     this->_root = this->create_node(src._root->_data);
     this->_size = 0;
@@ -222,6 +258,12 @@ class btree {
     // l'eccezione è lanciata da add dentro r_copy
   }
 
+  /**
+   * @brief Overload dell'operatore di assegnamento
+   *
+   * @param src L'albero sorgente
+   * @return btree& Un puntatore all'albero
+   */
   btree& operator=(const btree& src) {
     if (this != &src) {
       btree tmp(src);
@@ -278,7 +320,13 @@ class btree {
    */
   void print() const { std::cout << *this << std::endl; }
 
-  btree<T,C,E> subtree(const T data) const {
+  /**
+   * @brief Crea un sotto-albero a partire da un nodo di contenuto dato
+   *
+   * @param data Il contenuto del nodo da cui dobbiamo partire
+   * @return btree Il sotto-albero
+   */
+  btree subtree(const T data) const {
     node* sub_root = this->r_find_node(this->_root, data);
     if (sub_root == nullptr) {
       throw no_such_node{};

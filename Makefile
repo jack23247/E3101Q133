@@ -1,12 +1,13 @@
 # Makefile
-# Specifica di GNU Make per il progetto "bst"
+# Specifica di GNU Make per il progetto "btree"
+# Esame di Programmazione C++ 20/04/20
 # (c) 2020 - Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
-# Rilasciato sotto licenza MIT - Released under MIT license
+# Rilasciato sotto licenza MIT - Released under the MIT license
 
 .DEFAULT_GOAL := debug
 
 # Flag per il compilatore
-DBGFLAGS=-Og -ggdb -DDEBUG
+DBGFLAGS=-Og -ggdb
 RELFLAGS=-O3
 CXXFLAGS=-std=c++0x -Wall -Wextra -pedantic
 
@@ -15,37 +16,40 @@ DBG=.build/debug
 REL=.build/release
 
 # Target "debug" - Build con simboli di Debug
-debug: $(DBG)/../../bst
+debug: $(DBG)/../../btree
 
 $(DBG):
 	mkdir -p $@
 
-$(DBG)/main.o: main.cpp bst.hpp | $(DBG)
+$(DBG)/main.o: main.cpp btree.hpp | $(DBG)
 	$(CXX) $(CXXFLAGS) $(DBGFLAGS) -c $< -o $@
 
-$(DBG)/../../bst: $(DBG)/main.o
+$(DBG)/../../btree: $(DBG)/main.o
 	$(CXX) $(CXXFLAGS) $(DBGFLAGS) $^ -o $@
 
 # Target "release" - Build pulita
-release: $(REL)/../../bst clean
+release: $(REL)/../../btree autoclean
 
 $(REL):
 	mkdir -p $@
 
-$(REL)/main.o: main.cpp bst.hpp | $(REL)
+$(REL)/main.o: main.cpp btree.hpp | $(REL)
 	$(CXX) $(CXXFLAGS) $(RELFLAGS) -c $< -o $@
 
-$(REL)/../../bst: $(REL)/main.o
+$(REL)/../../btree: $(REL)/main.o
 	$(CXX) $(CXXFLAGS) $(RELFLAGS) $^ -o $@
 
 # Target "clean" - Operazione di pulizia
-.PHONY: clean test
+.PHONY: clean autoclean test
 
 clean:
 	rm -rf .build
 
+autoclean:
+	rm -rf .build/release
+
 # Target "check" - Operazione di controllo dei memory leak
 check:
-	valgrind --leak-check=full ./bst
+	valgrind --leak-check=full ./btree
 
 # EOF

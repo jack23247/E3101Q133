@@ -1,8 +1,14 @@
+// main.cpp
+// Programma dimostrativo per il progetto "btree"
+// Esame di Programmazione C++ 20/04/20
+// (c) 2020 - Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
+// Rilasciato sotto licenza MIT - Released under the MIT license
+
 #include <cassert>
 #include <ostream>
 #include <csignal>
 
-#include "bst.hpp"
+#include "btree.hpp"
 
 // #define TEST_FAIL
 
