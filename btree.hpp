@@ -7,7 +7,9 @@
 #ifndef BST_HPP
 #define BST_HPP
 
+#include <cstddef>
 #include <iostream>
+#include <iterator>
 
 #include "btexcept.hpp"
 
@@ -15,6 +17,8 @@
  * @brief Rappresenta un albero binario di ricerca
  *
  * @tparam T Tipo di dato contenuto dall'albero
+ * @tparam C Il funtore di comparazione
+ * @tparam E Il funtore di uguaglianza
  */
 template <typename T, typename C, typename E>
 class btree {
@@ -26,8 +30,8 @@ class btree {
     node* _left;
     node* _right;
     node* _parent;
-    T _data;
-
+    node* _qnext;
+    const T _data;
     /**
      * @brief Costruisce un nodo dato il contenuto
      *
@@ -35,7 +39,11 @@ class btree {
      * @param parent Il genitore del nodo
      */
     node(const T& data, node* parent)
-        : _left(nullptr), _right(nullptr), _parent(parent), _data(data) {}
+        : _left(nullptr),
+          _right(nullptr),
+          _parent(parent),
+          _qnext(nullptr),
+          _data(data) {}
 
     /**
      * @brief Distrugge il nodo
@@ -44,6 +52,7 @@ class btree {
       this->_left = nullptr;
       this->_right = nullptr;
       this->_parent = nullptr;
+      this->_qnext = nullptr;
     }
 
     /**
@@ -68,6 +77,7 @@ class btree {
   uint _size;
   C _compare_strategy;
   E _equals_strategy;
+  node* _qlast;
 
   /**
    * @brief Crea un nuovo nodo
@@ -184,7 +194,7 @@ class btree {
       r_destroy(cur_node->_left);
       r_destroy(cur_node->_right);
       delete cur_node;
-      cur_node = nullptr;
+      // cur_node = nullptr;
     }
   }
 
@@ -235,14 +245,78 @@ class btree {
     r_copy_from(src_tree, cur_src_node->_right);
   }
 
+
+ /* -------------------------------------------------------------------------
+  * TODOC
+  * ------------------------------------------------------------------------- */
  public:
+  class const_iterator {
+    const node* _cur_node;
+
+   public:
+    const_iterator() : _cur_node(nullptr) {}
+
+    const_iterator(const const_iterator& src) : _cur_node(src._cur_node) {}
+
+    const_iterator& operator=(const const_iterator& src) {
+      this->_cur_node = src._cur_node;
+      return *this;
+    }
+
+    ~const_iterator() {}
+
+    // Ritorna il dato riferito dall'iteratore (dereferenziamento)
+    const T& operator*() const { return this->_cur_node->_data; }
+
+    // Ritorna il puntatore al dato riferito dall'iteratore
+    const T* operator->() const { return &(this->_cur_node->_data); }
+
+    // Operatore di iterazione post-incremento
+    const_iterator operator++(int) {
+      const_iterator tmp(*this);
+      this->_cur_node = this->_cur_node->_qnext;
+      return tmp;
+    }
+
+    // Operatore di iterazione pre-incremento
+    const_iterator& operator++() {
+      this->_cur_node = this->_cur_node->_qnext;
+      return *this;
+    }
+
+    // Uguaglianza
+    bool operator==(const const_iterator& cmp) const {
+      return (this->_cur_node == cmp._cur_node);
+    }
+
+    // Diversita'
+    bool operator!=(const const_iterator& cmp) const {
+      return (this->_cur_node != cmp._cur_node);
+    }
+
+   private:
+    // La classe container deve essere messa friend dell'iteratore per poter
+    // usare il costruttore di inizializzazione.
+    friend class btree;
+
+    // Costruttore privato di inizializzazione usato dalla classe container
+    // tipicamente nei metodi begin e end
+    explicit const_iterator(const node* cur_node) : _cur_node(cur_node) {}
+
+  };  // endclass const_iterator
+
+ /* -------------------------------------------------------------------------
+  * end TODOC
+  * ------------------------------------------------------------------------- */
+
   /**
    * @brief Costruttore a partire da un dato per il btree
    *
    * @param data Il dato da inserire nel nodo radice
    */
-  btree(const T data) {
+  explicit btree(const T data) {
     this->_root = this->create_node(data);
+    this->_qlast = this->_root;
     this->_size = 0;
   };
 
@@ -253,9 +327,10 @@ class btree {
    */
   btree(const btree& src) {
     this->_root = this->create_node(src._root->_data);
+    this->_qlast = this->_root;
     this->_size = 0;
     this->r_copy_from(src, src._root);
-    // l'eccezione è lanciata da add dentro r_copy
+    // l'eccezione è lanciata da add dentro r_copy_from
   }
 
   /**
@@ -292,9 +367,13 @@ class btree {
     }
     if (lastBranch == direction::left) {
       cur_node->_left = create_node(data, cur_node);
+      tmpNodePtr = cur_node->_left;
     } else {
       cur_node->_right = create_node(data, cur_node);
+      tmpNodePtr = cur_node->_right;
     }
+    this->_qlast->_qnext = tmpNodePtr;
+    this->_qlast = tmpNodePtr;
     this->_size++;
   }
 
@@ -348,24 +427,41 @@ class btree {
     return output;
   }
 
+  /**
+   * @brief Restituisce l'iteratore alla radice dell'albero
+   *
+   * @return const_iterator L'iteratore all'inizio della coda
+   */
+  const_iterator begin() const { return const_iterator(this->_root); }
+
+  /**
+   * @brief Restituisce l'iteratore alla fine della struttura dati appiattita
+   *
+   * @return const_iterator L'iteratore alla fine della coda
+   */
+  const_iterator end() const { return const_iterator(nullptr); }
+
 };  // endclass btree
 
-/*
+/**
+ * @brief Stampa il valore dei nodi dell'albero che soddisfano un predicato
+ *
+ * @tparam T Il tipo di dato contenuto nell'albero
+ * @tparam C Il funtore di comparazione
+ * @tparam E Il funtore di uguaglianza
+ * @tparam P Il predicato tramite cui effettuare il controllo
+ * @param bt L'albero binario su cui effettuare il controllo e la stampa
+ */
 template <typename T, typename C, typename E, typename P>
-void printIF(const btree<T,C,E> &btr, P pred) {
+void printIF(const btree<T, C, E>& bt, P pred) {
+  typename btree<T, C, E>::const_iterator i, i_e;
 
-        typename ordered_list<T,C,E>::const_iterator i,ie;
-
-        i = ol.begin();
-        ie = ol.end();
-
-        while(i!=ie) {
-                if(pred(*i)) {
-                        std::cout << *i << std::endl;
-                }
-                ++i;
-        }
+  for (i = bt.begin(), i_e = bt.end(); i != i_e; ++i) {
+    if (pred(*i)) {
+      std::cout << *i << " " << std::flush;
+    }
+  }
+  std::cout << std::endl;
 }
-*/
 
 #endif
