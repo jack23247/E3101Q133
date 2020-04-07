@@ -20,14 +20,6 @@ struct compare_int {
   bool operator()(int a, int b) const { return a < b; }
 };
 
-struct equal_long {
-  bool operator()(long a, long b) const { return a == b; }
-};
-
-struct compare_long {
-  bool operator()(long a, long b) const { return a < b; }
-};
-
 int main() {
 
   // test costruttore base btree(T data)
@@ -61,8 +53,6 @@ int main() {
   // test get_size()
   assert(bst_a.get_size() == 10);
 
-  //std::raise(SIGINT);
-
   // test costruttore copia btree(btree src)
   btree<int, compare_int, equal_int> bst_b(bst_a);
 
@@ -76,8 +66,6 @@ int main() {
   // test subtree() e operator=()
   btree<int, compare_int, equal_int> bst_sub = bst_a.subtree(3);
   std::cout << "Il sotto-albero \"bst_sub\" di \"bst_a\" e': " << bst_sub << std::endl;
-
-
 
   return 0;
 }
