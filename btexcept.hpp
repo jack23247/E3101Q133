@@ -1,11 +1,10 @@
 // btexcept.hpp
 // Eccezioni custom per il progetto "btree"
 // Esame di Programmazione C++ 20/04/20
-// (c) 2020 - Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
-// Rilasciato sotto licenza MIT - Released under the MIT license
+// Copyright (c) 2020 Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
 
-#ifndef BSTEXCEPT_HPP
-#define BSTEXCEPT_HPP
+#ifndef BTEXCEPT_HPP
+#define BTEXCEPT_HPP
 
 #include <stdexcept>
 

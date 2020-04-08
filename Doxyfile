@@ -1,8 +1,7 @@
 # Doxyfile 1.8.13
 # Specifica di Doxygen per il progetto "btree"
 # Esame di Programmazione C++ 20/04/20
-# (c) 2020 - Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
-# Rilasciato sotto licenza MIT - Released under the MIT license
+# Copyright (c) 2020 Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
 
 #---------------------------------------------------------------------------
 

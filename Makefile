@@ -1,8 +1,7 @@
 # Makefile
 # Specifica di GNU Make per il progetto "btree"
 # Esame di Programmazione C++ 20/04/20
-# (c) 2020 - Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
-# Rilasciato sotto licenza MIT - Released under the MIT license
+# Copyright (c) 2020 Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
 
 .DEFAULT_GOAL := debug
 
@@ -27,6 +26,10 @@ $(DBG)/main.o: main.cpp btree.hpp | $(DBG)
 $(DBG)/../../btree: $(DBG)/main.o
 	$(CXX) $(CXXFLAGS) $(DBGFLAGS) $^ -o $@
 
+# Target "check" - Operazione di controllo dei memory leak
+check: debug
+
+	valgrind --leak-check=full ./btree
 # Target "release" - Build pulita
 release: $(REL)/../../btree autoclean
 
@@ -40,16 +43,12 @@ $(REL)/../../btree: $(REL)/main.o
 	$(CXX) $(CXXFLAGS) $(RELFLAGS) $^ -o $@
 
 # Target "clean" - Operazione di pulizia
-.PHONY: clean autoclean test
+.PHONY: clean autoclean
 
 clean:
 	rm -rf .build
 
 autoclean:
 	rm -rf .build/release
-
-# Target "check" - Operazione di controllo dei memory leak
-check:
-	valgrind --leak-check=full ./btree
 
 # EOF

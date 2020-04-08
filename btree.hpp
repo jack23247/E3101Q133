@@ -1,11 +1,10 @@
 // btree.hpp
 // Classe templata per il progetto "btree"
 // Esame di Programmazione C++ 20/04/20
-// (c) 2020 - Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
-// Rilasciato sotto licenza MIT - Released under the MIT license
+// Copyright (c) 2020 Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
 
-#ifndef BST_HPP
-#define BST_HPP
+#ifndef BTREE_HPP
+#define BTREE_HPP
 
 #include <cstddef>
 #include <iostream>
@@ -73,8 +72,8 @@ class btree {
    */
   enum direction { left, right };
 
-  node* _root;
   uint _size;
+  node* _root;
   C _compare_strategy;
   E _equals_strategy;
   node* _qlast;
@@ -88,8 +87,9 @@ class btree {
    *
    * @throw node_creation_error{} Nel caso non sia possibile creare il nodo
    */
-  node* create_node(const T data, node* parent = nullptr) {
+  node* create_node(const T& data, node* parent = nullptr) {
     try {
+      this->_size++;
       return new node(data, parent);
     } catch (...) {
       r_destroy(this->_root);
@@ -102,7 +102,7 @@ class btree {
    *
    * @param cur_node Il nodo di partenza
    * @param data Il dato da inserire
-   * @param lastBranch Annotazione riguardo all'ultima direzione presa
+   * @param cur_branch Annotazione riguardo all'ultima direzione presa
    *
    * @return node* il puntatore in cui inserire il nodo
    *
@@ -129,6 +129,7 @@ class btree {
    */
   void stream_print(std::ostream& output) const {
     if (this->_root == nullptr) return;  // sanity check
+    output << *this->_root << "; ";
     r_stream_print(output, this->_root->_left, this->_root, direction::left);
     r_stream_print(output, this->_root->_right, this->_root, direction::right);
   }
@@ -138,16 +139,16 @@ class btree {
    *
    * @param output Lo stream su cui stampare
    * @param cur_node Il nodo corrente
-   * @param parentNode Il nodo genitore
-   * @param lastBranch L'ultimo ramo preso
+   * @param parent_node Il nodo genitore
+   * @param cur_branch L'ultimo ramo preso
    */
   void r_stream_print(std::ostream& output, const node* cur_node,
-                      const node* parentNode, direction lastBranch) const {
+                      const node* parent_node, direction cur_branch) const {
     if (cur_node == nullptr) return;
-    if (lastBranch == direction::left) {
-      output << *parentNode << " -- l --> " << *cur_node << "; ";
-    } else if (lastBranch == direction::right) {
-      output << *parentNode << " -- r --> " << *cur_node << "; ";
+    if (cur_branch == direction::left) {
+      output << *parent_node << " -- l --> " << *cur_node << "; ";
+    } else if (cur_branch == direction::right) {
+      output << *parent_node << " -- r --> " << *cur_node << "; ";
     }
     r_stream_print(output, cur_node->_left, cur_node, direction::left);
     r_stream_print(output, cur_node->_right, cur_node, direction::right);
@@ -163,12 +164,13 @@ class btree {
    */
   node* r_find_node(node* cur_node, const T data) const {
     if (cur_node != nullptr) {
-      if (cur_node->_data == data) {
+      if (this->_equals_strategy(cur_node->_data, data)) {
         return cur_node;
-      } else if (cur_node->_data > data) {
-        return r_find_node(cur_node->_left, data);
-      } else if (cur_node->_data < data) {
+      }
+      if (this->_compare_strategy(cur_node->_data, data)) {
         return r_find_node(cur_node->_right, data);
+      } else {
+        return r_find_node(cur_node->_left, data);
       }
     }
     return nullptr;
@@ -207,7 +209,8 @@ class btree {
   void sub_copy(btree& dest_tree, const node* cur_node) const {
     if (cur_node == nullptr) {
       return;
-    }  // salto il primo nodo
+    } // sanity check
+    // salto il primo nodo poiche' e' la radice di dest_tree
     r_copy(dest_tree, cur_node->_left);
     r_copy(dest_tree, cur_node->_right);
   }
@@ -245,11 +248,8 @@ class btree {
     r_copy_from(src_tree, cur_src_node->_right);
   }
 
-
- /* -------------------------------------------------------------------------
-  * TODOC
-  * ------------------------------------------------------------------------- */
  public:
+
   class const_iterator {
     const node* _cur_node;
 
@@ -265,70 +265,55 @@ class btree {
 
     ~const_iterator() {}
 
-    // Ritorna il dato riferito dall'iteratore (dereferenziamento)
     const T& operator*() const { return this->_cur_node->_data; }
 
-    // Ritorna il puntatore al dato riferito dall'iteratore
     const T* operator->() const { return &(this->_cur_node->_data); }
 
-    // Operatore di iterazione post-incremento
     const_iterator operator++(int) {
       const_iterator tmp(*this);
       this->_cur_node = this->_cur_node->_qnext;
       return tmp;
     }
 
-    // Operatore di iterazione pre-incremento
     const_iterator& operator++() {
       this->_cur_node = this->_cur_node->_qnext;
       return *this;
     }
 
-    // Uguaglianza
     bool operator==(const const_iterator& cmp) const {
       return (this->_cur_node == cmp._cur_node);
     }
 
-    // Diversita'
     bool operator!=(const const_iterator& cmp) const {
       return (this->_cur_node != cmp._cur_node);
     }
 
    private:
-    // La classe container deve essere messa friend dell'iteratore per poter
-    // usare il costruttore di inizializzazione.
+
     friend class btree;
 
-    // Costruttore privato di inizializzazione usato dalla classe container
-    // tipicamente nei metodi begin e end
     explicit const_iterator(const node* cur_node) : _cur_node(cur_node) {}
 
   };  // endclass const_iterator
-
- /* -------------------------------------------------------------------------
-  * end TODOC
-  * ------------------------------------------------------------------------- */
 
   /**
    * @brief Costruttore a partire da un dato per il btree
    *
    * @param data Il dato da inserire nel nodo radice
    */
-  explicit btree(const T data) {
+  explicit btree(const T data) : _size(0) {
     this->_root = this->create_node(data);
     this->_qlast = this->_root;
-    this->_size = 0;
-  };
+  }
 
   /**
    * @brief Costruttore di copia per il btree
    *
    * @param src L'albero sorgente
    */
-  btree(const btree& src) {
+  btree(const btree& src) : _size(0) {
     this->_root = this->create_node(src._root->_data);
     this->_qlast = this->_root;
-    this->_size = 0;
     this->r_copy_from(src, src._root);
     // l'eccezione è lanciata da add dentro r_copy_from
   }
@@ -351,7 +336,7 @@ class btree {
   /**
    * @brief Distruttore per il btree
    */
-  ~btree() { this->destroy(); };
+  ~btree() { this->destroy(); }
 
   /**
    * @brief Aggiunge un nodo al btree e ne incrementa la dimensione
@@ -360,21 +345,20 @@ class btree {
    */
   void add(T data) {
     node* cur_node = this->_root;
-    node* tmpNodePtr;
-    direction lastBranch;
-    while ((tmpNodePtr = next_branch(cur_node, data, &lastBranch)) != nullptr) {
-      cur_node = tmpNodePtr;
+    node* tmp_node;
+    direction last_branch;
+    while ((tmp_node = next_branch(cur_node, data, &last_branch)) != nullptr) {
+      cur_node = tmp_node;
     }
-    if (lastBranch == direction::left) {
+    if (last_branch == direction::left) {
       cur_node->_left = create_node(data, cur_node);
-      tmpNodePtr = cur_node->_left;
+      tmp_node = cur_node->_left;
     } else {
       cur_node->_right = create_node(data, cur_node);
-      tmpNodePtr = cur_node->_right;
+      tmp_node = cur_node->_right;
     }
-    this->_qlast->_qnext = tmpNodePtr;
-    this->_qlast = tmpNodePtr;
-    this->_size++;
+    this->_qlast->_qnext = tmp_node;
+    this->_qlast = tmp_node;
   }
 
   /**
