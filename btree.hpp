@@ -209,7 +209,7 @@ class btree {
   void sub_copy(btree& dest_tree, const node* cur_node) const {
     if (cur_node == nullptr) {
       return;
-    } // sanity check
+    }  // sanity check
     // salto il primo nodo poiche' e' la radice di dest_tree
     r_copy(dest_tree, cur_node->_left);
     r_copy(dest_tree, cur_node->_right);
@@ -249,49 +249,90 @@ class btree {
   }
 
  public:
-
+  /**
+   * @brief Iteratore di sola lettura forward per la lettura della coda
+   * associata all'albero binario
+   *
+   */
   class const_iterator {
     const node* _cur_node;
 
    public:
+    /**
+     * @brief Costruttore di default per l'iteratore
+     */
     const_iterator() : _cur_node(nullptr) {}
 
+    /**
+     * @brief Costruttore di copia per l'iteratore
+     *
+     * @param src L'iteratore sorgente
+     */
     const_iterator(const const_iterator& src) : _cur_node(src._cur_node) {}
 
+    /**
+     * @brief Overload dell'operatore di assegnamento per l'iteratore
+     *
+     * @param src L'iteratore sorgente
+     */
     const_iterator& operator=(const const_iterator& src) {
       this->_cur_node = src._cur_node;
       return *this;
     }
 
+    /**
+     * @brief Distruttore per l'iteratore
+     */
     ~const_iterator() {}
 
+    /**
+     * @brief Overload dell'operatore di dereference per l'iteratore
+     */
     const T& operator*() const { return this->_cur_node->_data; }
 
+    /**
+     * @brief Overload dell'operatore di accesso per l'iteratore
+     */
     const T* operator->() const { return &(this->_cur_node->_data); }
 
+
+    /**
+     * @brief Overload dell'operatore di pre-incremento per l'iteratore
+     */
     const_iterator operator++(int) {
       const_iterator tmp(*this);
       this->_cur_node = this->_cur_node->_qnext;
       return tmp;
     }
 
+    /**
+     * @brief Overload dell'operatore di post-incremento per l'iteratore
+     */
     const_iterator& operator++() {
       this->_cur_node = this->_cur_node->_qnext;
       return *this;
     }
 
+    /**
+     * @brief Overload dell'operatore di uguaglianza per l'iteratore
+     */
     bool operator==(const const_iterator& cmp) const {
       return (this->_cur_node == cmp._cur_node);
     }
 
+    /**
+     * @brief Overload dell'operatore di disuguaglianza per l'iteratore
+     */
     bool operator!=(const const_iterator& cmp) const {
       return (this->_cur_node != cmp._cur_node);
     }
 
    private:
-
     friend class btree;
 
+    /**
+     * @brief Overload del costruttore a partire da un nodo per l'iteratore
+     */
     explicit const_iterator(const node* cur_node) : _cur_node(cur_node) {}
 
   };  // endclass const_iterator
