@@ -156,6 +156,10 @@ void MainWindow::emiReadyRead() {
 }
 
 void MainWindow::emiFinished() {
+    if(emiReply->error()) {
+        statusBar()->showMessage(tr("Impossibile contattare il server."));
+        return;
+    }
     emiTextArea->append(emiBuf);
     fillPieSeries(emiPieSeries, emiInitials);
     if (emiPieChart->series().empty()) {
@@ -190,6 +194,10 @@ void MainWindow::universalReadyRead() {
 }
 
 void MainWindow::universalFinished() {
+    if(emiReply->error()) {
+        statusBar()->showMessage(tr("Impossibile contattare il server."));
+        return;
+    }
     universalTextArea->append(universalBuf);
     fillPieSeries(universalPieSeries, universalInitials);
     if (universalPieChart->series().empty()) {
