@@ -3,7 +3,7 @@
 # Esame di Programmazione C++ 20/04/20
 # Copyright (c) 2020 Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
 
-.DEFAULT_GOAL := debug
+.DEFAULT_GOAL := release # debug
 
 # Flag per il compilatore
 DBGFLAGS=-Og -ggdb

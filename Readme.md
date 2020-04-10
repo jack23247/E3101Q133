@@ -7,12 +7,16 @@ Copyright (c) 2020 Jacopo Maltagliati <j.maltagliati@campus.unimib.it>
 
 # Esame di Programmazione C++ 20/04/20
 
-> ***NOTA***<br>
-> Questo documento **non** tratta in alcun modo la parte Qt del progetto: riferirsi all'omonimo all'interno della directory `Qt`.
+|               |                                |
+| :------------ | :----------------------------- |
+| **Nome**      | Jacopo                         |
+| **Cognome**   | Maltagliati                    |
+| **Matricola** | 830110                         |
+| **e-Mail**    | j.maltagliati@campus.unimib.it |
 
 ## Scopo del Progetto
 
-Implementare, come da specifica, una classe templata che rappresenti un albero binario di ricerca in C++, seguendo le specifiche C++03 con alcune eccezioni.
+Implementare, come da specifica, una classe templata che rappresenti un albero binario di ricerca in C++, seguendo lo standard C++03 con alcune eccezioni.
 
 ## Note Implementative
 
